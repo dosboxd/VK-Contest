@@ -14,7 +14,7 @@ final class ViewController: UIViewController {
     
     var grid = [[Int]]() {
         didSet {
-            isGameOver ? showLabel() : hideLabel()
+            isGameOver ? showButton() : hideButton()
             collectionView.reloadData()
         }
     }
@@ -34,13 +34,6 @@ final class ViewController: UIViewController {
         return button
     }()
     
-    let gameOverLabel: UILabel = {
-        let label = UILabel()
-        label.font = .systemFont(ofSize: 24, weight: .medium)
-        label.textColor = UIColor(red: 0.17, green: 0.18, blue: 0.18, alpha: 1.0)
-        return label
-    }()
-    
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -57,22 +50,16 @@ final class ViewController: UIViewController {
     }
     
     private func setupViews() {
-        view.addSubview(gameOverLabel)
         view.addSubview(collectionView)
         view.backgroundColor = UIColor.StyleGuide.background.color
         
         collectionView.backgroundColor = .clear
-        gameOverLabel.translatesAutoresizingMaskIntoConstraints = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint(item: collectionView, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0).isActive = true
         NSLayoutConstraint(item: collectionView, attribute: .centerY, relatedBy: .equal, toItem: view, attribute: .centerY, multiplier: 1, constant: 0).isActive = true
         NSLayoutConstraint(item: collectionView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width - 32).isActive = true
         NSLayoutConstraint(item: collectionView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width - 32).isActive = true
-        
-        NSLayoutConstraint(item: gameOverLabel, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: gameOverLabel, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: gameOverLabel, attribute: .bottom, relatedBy: .equal, toItem: collectionView, attribute: .top, multiplier: 1, constant: 0).isActive = true
         
         view.addSubview(tryAgainButton)
         
@@ -254,10 +241,7 @@ final class ViewController: UIViewController {
         UserDefaults.standard.synchronize()
         
         setupGame()
-        gameOverLabel.text?.removeAll()
-        UIView.animate(withDuration: 0.3) {
-            self.gameOverLabel.alpha = 0
-        }
+        hideButton()
     }
     
     @objc func swiped(_ sender: UISwipeGestureRecognizer) {
@@ -276,19 +260,15 @@ final class ViewController: UIViewController {
         }
     }
     
-    func showLabel() {
-        gameOverLabel.text = isGameWon ? "Вы победили" : "Вы проиграли"
-        if gameOverLabel.alpha == 1 { return }
+    func showButton() {
         UIView.animate(withDuration: 0.3) {
-            self.gameOverLabel.alpha = 1
+            self.tryAgainButton.alpha = 1
         }
     }
     
-    func hideLabel() {
-        gameOverLabel.text?.removeAll()
-        if gameOverLabel.alpha == 0 { return }
+    func hideButton() {
         UIView.animate(withDuration: 0.3) {
-            self.gameOverLabel.alpha = 0
+            self.tryAgainButton.alpha = 0
         }
     }
 }

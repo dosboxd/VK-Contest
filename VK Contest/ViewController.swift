@@ -15,10 +15,7 @@ final class ViewController: UIViewController {
             collectionView.reloadData()
         }
     }
-    let rightButton = UIButton()
-    let leftButton = UIButton()
-    let topButton = UIButton()
-    let bottomButton = UIButton()
+    
     lazy var tryAgainButton: UIButton = {
         let button = UIButton()
         let attributedString = NSAttributedString(string: "Попробовать еще раз", attributes: [.font: UIFont.systemFont(ofSize: 16, weight: .semibold), .foregroundColor: UIColor(red: 0.17, green: 0.18, blue: 0.18, alpha: 1.0)])
@@ -34,6 +31,7 @@ final class ViewController: UIViewController {
         button.addTarget(self, action: #selector(restartTapped), for: .touchUpInside)
         return button
     }()
+    
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -51,7 +49,6 @@ final class ViewController: UIViewController {
     }
     
     private func setupViews() {
-        
         view.addSubview(collectionView)
         view.backgroundColor = UIColor.StyleGuide.background.color
         
@@ -63,39 +60,7 @@ final class ViewController: UIViewController {
         NSLayoutConstraint(item: collectionView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width - 32).isActive = true
         NSLayoutConstraint(item: collectionView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width - 32).isActive = true
         
-        topButton.tag = 0
-        topButton.setTitle("Top", for: .normal)
-        topButton.setTitleColor(.blue, for: .normal)
-        topButton.addTarget(self, action: #selector(slide), for: .touchUpInside)
-        
-        bottomButton.tag = 1
-        bottomButton.setTitle("Bottom", for: .normal)
-        bottomButton.setTitleColor(.blue, for: .normal)
-        bottomButton.addTarget(self, action: #selector(slide), for: .touchUpInside)
-        
-        leftButton.tag = 2
-        leftButton.setTitle("Left", for: .normal)
-        leftButton.setTitleColor(.blue, for: .normal)
-        leftButton.addTarget(self, action: #selector(slide), for: .touchUpInside)
-        
-        rightButton.tag = 3
-        rightButton.setTitle("Right", for: .normal)
-        rightButton.setTitleColor(.blue, for: .normal)
-        rightButton.translatesAutoresizingMaskIntoConstraints = false
-        rightButton.addTarget(self, action: #selector(slide), for: .touchUpInside)
-        
-        let stack = UIStackView(arrangedSubviews: [topButton, bottomButton, leftButton, rightButton])
-        stack.distribution = .fillEqually
-        stack.axis = .horizontal
-        stack.alignment = .fill
-        
-        view.addSubview(stack)
         view.addSubview(tryAgainButton)
-        
-        stack.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint(item: stack, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0).isActive = true
-        NSLayoutConstraint(item: stack, attribute: .top, relatedBy: .equal, toItem: collectionView, attribute: .bottom, multiplier: 1, constant: 15).isActive = true
         
         tryAgainButton.translatesAutoresizingMaskIntoConstraints = false
         
@@ -108,6 +73,24 @@ final class ViewController: UIViewController {
         }
         
         tryAgainButton.sizeToFit()
+        
+        let topSwipe = UISwipeGestureRecognizer(target: self, action: #selector(swiped))
+        topSwipe.direction = .up
+        topSwipe.numberOfTouchesRequired = 1
+        let bottomSwipe = UISwipeGestureRecognizer(target: self, action: #selector(swiped))
+        bottomSwipe.numberOfTouchesRequired = 1
+        bottomSwipe.direction = .down
+        let leftSwipe = UISwipeGestureRecognizer(target: self, action: #selector(swiped))
+        leftSwipe.numberOfTouchesRequired = 1
+        leftSwipe.direction = .left
+        let rightSwipe = UISwipeGestureRecognizer(target: self, action: #selector(swiped))
+        rightSwipe.numberOfTouchesRequired = 1
+        rightSwipe.direction = .right
+        
+        view.addGestureRecognizer(topSwipe)
+        view.addGestureRecognizer(bottomSwipe)
+        view.addGestureRecognizer(leftSwipe)
+        view.addGestureRecognizer(rightSwipe)
     }
     
     func setupGame() {
@@ -146,27 +129,30 @@ final class ViewController: UIViewController {
         return blank
     }
     
-    @objc func slide(_ sender: UIButton) {
+    @objc func slideTapped(_ sender: UIButton) {
+        guard let direction = Direction(rawValue: sender.tag) else { return }
+        slide(direction: direction)
+    }
+    
+    func slide(direction: Direction) {
         
         var flipped = false
         var rotated = false
         
-        switch Direction(rawValue: sender.tag) {
-        case .top?:
+        switch direction {
+        case .top:
             grid = rotate()
             flip()
             rotated = true
             flipped = true
-        case .bottom?:
+        case .bottom:
             grid = rotate()
             rotated = true
-        case .left?:
+        case .left:
             flip()
             flipped = true
-        case .right?:
-            print()
-        default:
-            print()
+        case .right:
+            break
         }
         
         let past = grid
@@ -246,6 +232,22 @@ final class ViewController: UIViewController {
         setupGame()
         UIView.animate(withDuration: 0.3) {
             self.tryAgainButton.alpha = 0
+        }
+    }
+    
+    @objc func swiped(_ sender: UISwipeGestureRecognizer) {
+        guard sender.state == .ended else { return }
+        switch sender.direction {
+        case .up:
+            slide(direction: .top)
+        case .down:
+            slide(direction: .bottom)
+        case .left:
+            slide(direction: .left)
+        case .right:
+            slide(direction: .right)
+        default:
+            break
         }
     }
 }

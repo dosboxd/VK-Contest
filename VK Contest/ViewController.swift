@@ -10,8 +10,11 @@ import UIKit
 
 final class ViewController: UIViewController {
     
+    let goal = 2048
+    
     var grid = [[Int]]() {
         didSet {
+            isGameOver ? showLabel() : hideLabel()
             collectionView.reloadData()
         }
     }
@@ -27,11 +30,16 @@ final class ViewController: UIViewController {
         button.layer.shadowOffset = CGSize(width: 0, height: 1)
         button.layer.shadowRadius = 5
         button.layer.shadowOpacity = 0.1
-        button.alpha = 0
         button.addTarget(self, action: #selector(restartTapped), for: .touchUpInside)
         return button
     }()
     
+    let gameOverLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 24, weight: .medium)
+        label.textColor = UIColor(red: 0.17, green: 0.18, blue: 0.18, alpha: 1.0)
+        return label
+    }()
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -49,16 +57,22 @@ final class ViewController: UIViewController {
     }
     
     private func setupViews() {
+        view.addSubview(gameOverLabel)
         view.addSubview(collectionView)
         view.backgroundColor = UIColor.StyleGuide.background.color
         
         collectionView.backgroundColor = .clear
+        gameOverLabel.translatesAutoresizingMaskIntoConstraints = false
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint(item: collectionView, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0).isActive = true
         NSLayoutConstraint(item: collectionView, attribute: .centerY, relatedBy: .equal, toItem: view, attribute: .centerY, multiplier: 1, constant: 0).isActive = true
         NSLayoutConstraint(item: collectionView, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width - 32).isActive = true
         NSLayoutConstraint(item: collectionView, attribute: .width, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: UIScreen.main.bounds.width - 32).isActive = true
+        
+        NSLayoutConstraint(item: gameOverLabel, attribute: .centerX, relatedBy: .equal, toItem: view, attribute: .centerX, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: gameOverLabel, attribute: .top, relatedBy: .equal, toItem: view, attribute: .top, multiplier: 1, constant: 0).isActive = true
+        NSLayoutConstraint(item: gameOverLabel, attribute: .bottom, relatedBy: .equal, toItem: collectionView, attribute: .top, multiplier: 1, constant: 0).isActive = true
         
         view.addSubview(tryAgainButton)
         
@@ -72,11 +86,9 @@ final class ViewController: UIViewController {
             NSLayoutConstraint(item: tryAgainButton, attribute: .bottom, relatedBy: .equal, toItem: view, attribute: .bottom, multiplier: 1, constant: -30).isActive = true
         }
         
-        tryAgainButton.sizeToFit()
-        
         let topSwipe = UISwipeGestureRecognizer(target: self, action: #selector(swiped))
-        topSwipe.direction = .up
         topSwipe.numberOfTouchesRequired = 1
+        topSwipe.direction = .up
         let bottomSwipe = UISwipeGestureRecognizer(target: self, action: #selector(swiped))
         bottomSwipe.numberOfTouchesRequired = 1
         bottomSwipe.direction = .down
@@ -94,9 +106,13 @@ final class ViewController: UIViewController {
     }
     
     func setupGame() {
-        grid = Array(repeating: Array(repeating: 0, count: 4), count: 4)
-        addNumber()
-        addNumber()
+        if let savedState = UserDefaults.standard.value(forKey: "SavedState") as? [[Int]] {
+            grid = savedState
+        } else {
+            grid = Array(repeating: Array(repeating: 0, count: 4), count: 4)
+            addNumber()
+            addNumber()
+        }
     }
     
     func addNumber() {
@@ -109,7 +125,7 @@ final class ViewController: UIViewController {
             }
         }
         if !options.isEmpty, let position = options.randomElement() {
-            grid[position.x][position.y] = Float(Int.random(in: 0...1)) > 0.5 ? 2 : 4
+            grid[position.x][position.y] = Float(Int.random(in: 0...1)) > 0.1 ? 2 : 4
         }
     }
     
@@ -177,11 +193,8 @@ final class ViewController: UIViewController {
             grid = rotate()
         }
         
-        if isGameOver {
-            UIView.animate(withDuration: 0.3) {
-                self.tryAgainButton.alpha = 1
-            }
-        }
+        UserDefaults.standard.set(grid, forKey: "SavedState")
+        UserDefaults.standard.synchronize()
     }
     
     func move(row: [Int]) -> [Int] {
@@ -207,7 +220,15 @@ final class ViewController: UIViewController {
         return mRow
     }
     
+    var isGameWon: Bool {
+        return !grid.flatMap({$0}).filter({$0>=goal}).isEmpty
+    }
+    
     var isGameOver: Bool {
+        
+        if isGameWon {
+            return true
+        }
         
         for (o, k) in grid.enumerated() {
             for (o2, _) in k.enumerated() {
@@ -229,9 +250,13 @@ final class ViewController: UIViewController {
     }
     
     @objc func restartTapped() {
+        UserDefaults.standard.removeObject(forKey: "SavedState")
+        UserDefaults.standard.synchronize()
+        
         setupGame()
+        gameOverLabel.text?.removeAll()
         UIView.animate(withDuration: 0.3) {
-            self.tryAgainButton.alpha = 0
+            self.gameOverLabel.alpha = 0
         }
     }
     
@@ -248,6 +273,22 @@ final class ViewController: UIViewController {
             slide(direction: .right)
         default:
             break
+        }
+    }
+    
+    func showLabel() {
+        gameOverLabel.text = isGameWon ? "Вы победили" : "Вы проиграли"
+        if gameOverLabel.alpha == 1 { return }
+        UIView.animate(withDuration: 0.3) {
+            self.gameOverLabel.alpha = 1
+        }
+    }
+    
+    func hideLabel() {
+        gameOverLabel.text?.removeAll()
+        if gameOverLabel.alpha == 0 { return }
+        UIView.animate(withDuration: 0.3) {
+            self.gameOverLabel.alpha = 0
         }
     }
 }

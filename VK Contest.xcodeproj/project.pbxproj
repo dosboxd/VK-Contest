@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		19CD5301228BE241004C475F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19CD5300228BE241004C475F /* AppDelegate.swift */; };
 		19CD5303228BE241004C475F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19CD5302228BE241004C475F /* ViewController.swift */; };
-		19CD5306228BE241004C475F /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 19CD5304228BE241004C475F /* Main.storyboard */; };
 		19CD5308228BE242004C475F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 19CD5307228BE242004C475F /* Assets.xcassets */; };
 		19CD530B228BE242004C475F /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 19CD5309228BE242004C475F /* LaunchScreen.storyboard */; };
 /* End PBXBuildFile section */
@@ -18,7 +17,6 @@
 		19CD52FD228BE241004C475F /* VK Contest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "VK Contest.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		19CD5300228BE241004C475F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		19CD5302228BE241004C475F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		19CD5305228BE241004C475F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		19CD5307228BE242004C475F /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		19CD530A228BE242004C475F /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		19CD530C228BE242004C475F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -56,7 +54,6 @@
 			children = (
 				19CD5300228BE241004C475F /* AppDelegate.swift */,
 				19CD5302228BE241004C475F /* ViewController.swift */,
-				19CD5304228BE241004C475F /* Main.storyboard */,
 				19CD5307228BE242004C475F /* Assets.xcassets */,
 				19CD5309228BE242004C475F /* LaunchScreen.storyboard */,
 				19CD530C228BE242004C475F /* Info.plist */,
@@ -124,7 +121,6 @@
 			files = (
 				19CD530B228BE242004C475F /* LaunchScreen.storyboard in Resources */,
 				19CD5308228BE242004C475F /* Assets.xcassets in Resources */,
-				19CD5306228BE241004C475F /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,14 +139,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXVariantGroup section */
-		19CD5304228BE241004C475F /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				19CD5305228BE241004C475F /* Base */,
-			);
-			name = Main.storyboard;
-			sourceTree = "<group>";
-		};
 		19CD5309228BE242004C475F /* LaunchScreen.storyboard */ = {
 			isa = PBXVariantGroup;
 			children = (
@@ -285,6 +273,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2ZXG42P8KB;
 				INFOPLIST_FILE = "VK Contest/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -292,7 +281,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.dosboxd.VK-Contest";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
 		};
@@ -303,6 +292,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 2ZXG42P8KB;
 				INFOPLIST_FILE = "VK Contest/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -310,7 +300,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "com.dosboxd.VK-Contest";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
 		};
